@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }else if(layout[i] === 1){
                 squares[i].classList.add('wall')
             }else if(layout[i] === 2){
-                //squares[i].classList.add('power-pellet')
+                squares[i].classList.add('ghost-liar')
             }else if(layout[i] === 3){
                 squares[i].classList.add('power-pellet')
             }
@@ -76,21 +76,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     switch(e.keyCode){
         case 37:
-            if(pacmanCurrentIndex % width !==0) pacmanCurrentIndex -=1
+            if(
+                pacmanCurrentIndex % width !==0 && 
+                !squares[pacmanCurrentIndex -1].classList.contains('wall') && 
+                !squares[pacmanCurrentIndex -1].classList.contains('ghost-liar'))
+                pacmanCurrentIndex -=1
+
+            //&& !squares[pacmanCurrentIndex -1].classList.contains('wall') ---> this codes block doesnot let our pacman to go through the walls
+
+            //check if pacman is in the left exit
+            //moving from left to right
+            if((pacmanCurrentIndex -1) === 363){
+                squares[pacmanCurrentIndex].classList.add('pac-man')
+                pacmanCurrentIndex = 391
+                squares[364].classList.remove('pac-man')
+            }
             break
         case 38:
-            if(pacmanCurrentIndex -width >=0) pacmanCurrentIndex -=width
+            if(
+                pacmanCurrentIndex -width >=0 && 
+                !squares[pacmanCurrentIndex -width].classList.contains('wall') &&
+                !squares[pacmanCurrentIndex- width].classList.contains('ghost-liar')) pacmanCurrentIndex -=width
             break
         case 39:
-            if(pacmanCurrentIndex % width < width -1) pacmanCurrentIndex +=1
+            if(pacmanCurrentIndex % width < width -1 && !squares[pacmanCurrentIndex + 1].classList.contains('wall') && !squares[pacmanCurrentIndex +1].classList.contains('ghost-liar')) 
+            pacmanCurrentIndex +=1
+
+            //check if pacman is in right exit
+            //moving from right to left
+
+            if((pacmanCurrentIndex +1) === 392){
+                squares[pacmanCurrentIndex].classList.add('pac-man')
+                pacmanCurrentIndex = 364
+                squares[391].classList.remove('pac-man')
+            }
             break
         case 40:
-            if(pacmanCurrentIndex + width < width * width) pacmanCurrentIndex +=width
+            if(pacmanCurrentIndex + width < width * width && !squares[pacmanCurrentIndex + width].classList.contains('wall') &&
+            !squares[pacmanCurrentIndex +width].classList.contains('ghost-liar')) pacmanCurrentIndex +=width
             break
         }
 
         squares[pacmanCurrentIndex].classList.add('pac-man')
+
+        //pacDotEaten()
+        //powerPelletEaten()
+        //checkforGameOver()
+        //checkforWin()
     }
+
+    document.addEventListener('keyup', movePacman) // movement of pacman, but here the problem is pacman moves through the wall, fixed in thw switch case
 
 
 
