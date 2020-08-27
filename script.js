@@ -121,9 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
         squares[pacmanCurrentIndex].classList.add('pac-man')
 
         pacDotEaten()
-        //powerPelletEaten()
-        //checkforGameOver()
-        //checkforWin()
+        powerPelletEaten()
+        checkforGameOver()
+        checkforWin()
     }
 
     document.addEventListener('keyup', movePacman) // movement of pacman, but here the problem is pacman moves through the wall, fixed in thw switch case
@@ -194,7 +194,64 @@ document.addEventListener('DOMContentLoaded', () => {
             
             }else direction = directions[Math.floor(Math.random() * directions.length)]
 
+
+            //if the ghost is currently scare
+
+            if(ghost.isScared ) {
+                squares[ghost.currentIndex].classList.add('scared-ghost')
+            }
+
+            //if the ghost is scared and pacman runs into it
+
+            if(ghost.isScared && squares[ghost.currentIndex].classList.contains('pac-man')){
+                squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost')
+                ghost.currentIndex = ghost.startIndex
+                score +=100
+                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
+            }
+
+            checkforGameOver()
         }, ghost.speed)
     }
 
+    //when pacman eats the power-pellet
+    //all th ghost turns blue
+    function powerPelletEaten(){
+        if(squares[pacmanCurrentIndex].classList.contains('power-pellet')){
+            score +=10
+            ghosts.forEach(ghost => ghost.isScared = true)
+            setTimeout(unScaredGhosts, 10000)
+            squares[pacmanCurrentIndex].classList.remove('power-pellet')
+           
+        }
+    }
+
+    //make the ghosts stop flashing
+
+    function unScaredGhosts() {
+        ghosts.forEach(ghost => ghost.isScared = false)
+    }
+
+    //check for gameover
+    function checkforGameOver() {
+
+        if(squares[pacmanCurrentIndex].classList.contains('ghost') &&
+        !squares[pacmanCurrentIndex].classList.contains('scared-ghost')) {
+            ghosts.forEach(ghost => clearInterval(ghost.timerId))
+            document.removeEventListener('keyup', movePacman)
+            setTimeout(function() {
+                alert('GAME OVER!')
+            }, 500)
+        }
+
+    }
+
+    //win function
+    function checkforWin() {
+        if(score ===274){
+            ghosts.forEach(ghost => clearInterval(ghost.timerId))
+            document.removeEventListener('keyup', movePacman)
+            scoreDisplay.innerHTML = 'CONGRATULATIONS!, YOU WON!'
+        }
+    }
 })
